@@ -1,20 +1,44 @@
 ---
-name: workflow to run the commands
-
+name: to run mutliple jobswith different runners
 on: 
-  workflow_dispatch:
-
+ workflow_dispatch:
+  inputs:
+   runner:
+    description: 'select the job to run'
+    required: true
+    type: choice
+    options:
+     - ubuntu-latest
+     - ubuntu-22.04
+     - windows-latest
+     
+   jobs_name:
+     description: 'select the job to run'
+     required: true
+     type: choice
+     options:
+      - buildjob
+      - testjob
+      - deployjob
+      
 jobs:
-  job1:
-    runs-on: ubuntu-latest
-    steps:
-      - name: run linux command
-        run: echo "hello all"
-
-  job2:
-    runs-on: ubuntu-24.04
-    steps:
-      - name: run many linux commands
-        run: |
-          hostname -s
-          echo "thanks"
+ buildjob:
+  if: ${{ github.event.inputs.jobs_name == 'buildjob' }}
+  runs-on: ${{github.event.inputs.runner}}
+  steps:
+  - name: build the job
+    run: echo "build the job"
+    
+ testjob:
+  if: ${{ github.event.inputs.jobs_name == 'testjob' }}
+  runs-on: ${{github.event.inputs.runner}}
+  steps:
+  - name: test the job
+    run: echo "test the job"
+   
+ deployjob:
+  if: ${{ github.event.inputs.jobs_name == 'deployjob' }}
+  runs-on: ${{github.event.inputs.runner}}
+  steps:
+  - name: deploy the job
+    run: echo "deploy the job"
